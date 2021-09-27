@@ -80,7 +80,9 @@ internal class MainKtTest {
 
     @Test
     fun `testing esPrimo for timeout`() {
-        val result = org.junit.jupiter.api.assertTimeout(Duration.ofMillis(150)) {
+        val result =
+            org.junit.jupiter.api.assertTimeout(
+                Duration.ofMillis(150)) {
             esPrimo(3452345252452462464)
         }
 //        assert(true) { result }

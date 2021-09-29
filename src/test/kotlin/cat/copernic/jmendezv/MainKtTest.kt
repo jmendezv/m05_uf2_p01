@@ -1,11 +1,6 @@
 package cat.copernic.jmendezv
 
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
-
+import com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOut
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -14,6 +9,8 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
 import java.time.Duration
 import java.util.stream.Stream
 import kotlin.test.assertFalse
@@ -24,18 +21,23 @@ import kotlin.test.assertTrue
 //@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
 internal class MainKtTest {
 
+
+
     companion object {
+
+        private val outContent = ByteArrayOutputStream()
+        private val originalOut = System.out
 
         @BeforeAll
         @JvmStatic
         fun init() {
-            println("BeforeAll()")
+            System.setOut(PrintStream(outContent));
         }
 
         @AfterAll
         @JvmStatic
         fun end() {
-            println("AfterAll()")
+            System.setOut(originalOut);
         }
 
         @JvmStatic
@@ -47,17 +49,31 @@ internal class MainKtTest {
             )
         }
 
-    }
+        @JvmStatic
+        fun provideParametersForSuma(): Stream<Arguments?>? {
+            return Stream.of(
+                Arguments.of(1, 1, 2),
+                Arguments.of(3, 2, 5),
+                Arguments.of(4, 3, 7)
+            )
+        }
+        @JvmStatic
+        fun provideParametersForEsPrimo(): Stream<Arguments?>? {
+            return Stream.of(
+                Arguments.of(arrayOf(1,2,3,4)),
+                Arguments.of(arrayOf(2,4,5,7)),
+                Arguments.of(arrayOf(98,12,3,4,40)),
+            )
+        }
 
+    }
 
     @BeforeEach
     fun setUp() {
-        println("en setUP()")
     }
 
     @AfterEach
     fun tearDown() {
-        println("en tearDown()")
     }
 
     @Test
@@ -70,9 +86,15 @@ internal class MainKtTest {
         )
     }
 
+    @ParameterizedTest
+    @MethodSource("provideParametersForSuma")
+    fun suma2(a: Int, b: Int, t: Int) {
+        assertEquals(t, suma(a, b))
+    }
+
     //    @Test
     @ParameterizedTest
-    @ValueSource(ints = [3, 2, 5, 7])
+    @ValueSource(ints = [3, 2, 5, 7], )
     fun esPrimoTest(n: Long) {
         assertTrue(esPrimo(n))
         assertFalse(esPrimo(n * 2))
@@ -133,12 +155,27 @@ internal class MainKtTest {
 
     @Test
     fun ordena() {
-        assertArrayEquals(arrayOf(1, 2, 3, 4, 5), ordena(arrayOf(4, 5, 3, 1, 2)))
+        assertArrayEquals(arrayOf(1, 2, 3, 4, 5),
+            ordena(arrayOf(4, 5, 3, 1, 2)))
     }
 
     @Test
-    fun sayHi() {
+    fun sayHiTest() {
 
+        val output = tapSystemOut {
+            sayHi()
+        }
+
+        assertEquals(
+            "Hi!",
+            output.trim()
+        )
+    }
+
+    @Test
+    fun sayHiTestOldSchool() {
+        sayHi()
+        assertEquals("Hi!", outContent.toString());
     }
 }
 

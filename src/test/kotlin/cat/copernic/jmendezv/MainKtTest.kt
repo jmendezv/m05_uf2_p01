@@ -21,8 +21,6 @@ import kotlin.test.assertTrue
 //@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
 internal class MainKtTest {
 
-
-
     companion object {
 
         private val outContent = ByteArrayOutputStream()
@@ -140,8 +138,8 @@ internal class MainKtTest {
     fun division() {
         assertEquals(2, cat.copernic.jmendezv.division(6, 3))
         assertThrows<ArithmeticException> {
-            assertEquals(2, cat.copernic.jmendezv.division(6, 0))
-            assertEquals(2, cat.copernic.jmendezv.division(9, 0))
+            cat.copernic.jmendezv.division(6, 0)
+            cat.copernic.jmendezv.division(9, 0)
         }
     }
 
